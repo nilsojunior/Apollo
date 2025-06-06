@@ -1,0 +1,73 @@
+TL {Título} -- Title
+
+AU {Autor} -- Author
+
+AUI {Instituição do Autor} -- Author institution
+
+-- ABSTRACT
+AB {
+    Abstract content. Abstract content. Abstract content. Abstract content.  
+    Abstract content. Abstract content. Abstract content. Abstract content.  
+    Abstract content. Abstract content. Abstract content. Abstract content.  
+    Abstract content. Abstract content. Abstract content. Abstract content.  
+}
+
+NH {Header Numerado} -- Numbered header
+
+-- Paragraph
+P {
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+}    
+
+NH 1 {Header Numerado Explicito} -- Explicit numbered header
+
+-- Paragraph
+P {
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+}    
+
+NH 2 {Header Numerado 2} -- Numbered header 2
+
+-- Paragraph
+P {
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+    Isto é um parágrafo. Isto é um parágrafo. Isto é um parágrafo.
+}    
+
+H {Header} -- Header
+
+BP {Bullet Point} -- Bullet point
+BP {Bullet Point} -- Bullet point
+BP {Bullet Point} -- Bullet point
+BP {Bullet Point} -- Bullet point
+BP {Bullet Point} -- Bullet point
+
+BP 4 {Bullet Point com 4 de identação} -- 4 identation Bullet point
+BP 4 {Bullet Point com 4 de identação} -- 4 identation Bullet point
+BP 4 {Bullet Point com 4 de identação} -- 4 identation Bullet point
+BP 4 {Bullet Point com 4 de identação} -- 4 identation Bullet point
+BP 4 {Bullet Point com 4 de identação} -- 4 identation Bullet point
+
+H {Python}
+P {Hello world em python.}
+-- Code block
+CB python {
+    print("Hello, World!")
+}
+
+H {Rust}
+P {Hello world em rust.}
+-- Code block
+CB rust {
+    fn main() {
+        println!("Hello, World!");
+    }
+}

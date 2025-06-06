@@ -1,0 +1,167 @@
+import java_cup.runtime.*;
+import java.io.FileReader;
+import java.io.*;
+
+parser code {:
+    private StringBuilder groffCode = new StringBuilder();
+
+    // Remove whitespaces and tabs at the begining
+    private String cleanString(Object value) {
+        String content = value.toString();
+        String[] lines = content.split("\n");
+        StringBuilder cleanedContent = new StringBuilder();
+
+        for (String line : lines) {
+            cleanedContent.append(line.replaceFirst("^[ \t]+", "")).append("\n");
+        }
+        // System.out.println(cleanedContent.toString());
+        return cleanedContent.toString();
+    }
+
+    public static void main(String[] args) throws Exception {
+        if (args.length != 1) {
+            System.err.println("Provide a file");
+            System.exit(1);
+        }
+        try {
+            PdfView lexer = new PdfView(new FileReader(args[0]));
+            parser p = new parser(lexer);
+
+            // Filename without extension
+            String baseFileName = args[0];
+            int lastDot = baseFileName.lastIndexOf('.');
+            if (lastDot > 0) {
+                baseFileName = baseFileName.substring(0, lastDot);
+            }
+            String fileName = baseFileName;
+            p.parse();
+
+            p.createGrofFile(fileName);
+            String[] cmd = { "bash", "-c", "preconv " + fileName + ".ms | groff -ms -Tpdf > " + fileName + ".pdf" };
+            Process toPdf = Runtime.getRuntime().exec(cmd);
+            // preconv handles UTF encoding
+                    
+            toPdf.waitFor();
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public void createGrofFile(String fileName) throws IOException {
+        try (PrintWriter out = new PrintWriter(fileName + ".ms")) {
+            out.println("\\\"This file was auto generated");
+            out.println(groffCode.toString());
+        }
+    }
+:};
+
+terminal TL;
+terminal P;
+terminal AU;
+terminal AUI;
+terminal DATE;
+terminal NH;
+terminal NH_1;
+terminal NH_2;
+terminal H;
+terminal AB;
+terminal IP;
+terminal BP;
+terminal BP_4;
+terminal CB;
+terminal String CONTENT;
+
+non terminal stmt, stmt_list;
+non terminal program;
+
+start with program;
+
+program ::= stmt_list;
+
+stmt_list ::= stmt | stmt_list stmt;
+
+stmt ::= TL CONTENT:c
+{: 
+    String cleaned = cleanString(c);
+    groffCode.append(".TL\n").append(cleaned).append("\n");
+:}
+| P CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".PP\n").append(cleaned).append("\n");
+:}
+| AU CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".AU\n").append(cleaned).append("\n");
+:}
+| AUI CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".AI\n").append(cleaned).append("\n");
+:}
+| DATE CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".DA\n").append(cleaned).append("\n");
+:}
+| NH CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".NH\n").append(cleaned).append("\n");
+:}
+| NH_1 CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".NH\n").append(cleaned).append("\n");
+:}
+| NH_2 CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".NH 2\n").append(cleaned).append("\n");
+:}
+| H CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".SH\n").append(cleaned).append("\n");
+:}
+| AB CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".AB\n").append(cleaned).append("\n.AE\n");
+:}
+| IP CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".IP\n").append(cleaned).append("\n");
+:}
+| BP CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".IP \\(bu 2\n").append(cleaned).append("\n");
+:}
+| BP_4 CONTENT:c
+{:
+    String cleaned = cleanString(c);
+    groffCode.append(".IP \\(bu 4\n").append(c).append("\n");
+:}
+| CB:lang CONTENT:c
+{:
+    String[] cmd = { "bash", "-c","echo \'" + c + "\' | pygmentize -f groff -O style=gruvbox-light  -l " + lang };
+    Process code = Runtime.getRuntime().exec(cmd);
+
+    BufferedReader reader = new BufferedReader(new InputStreamReader(code.getInputStream()));
+    StringBuilder highlighted = new StringBuilder();
+    String line;
+    while ((line = reader.readLine()) != null) {
+        highlighted.append(line).append("\n");
+    }
+
+    code.waitFor();
+
+    groffCode.append(".DS\n");
+    groffCode.append(highlighted);
+    groffCode.append(".DE\n");
+:}
+;
